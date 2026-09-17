@@ -1,0 +1,373 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { siteConfig } from '../data/site';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const todoItems = await getCollection('todo');
+const todoEntry = todoItems[0];
+const { Content } = await todoEntry.render();
+
+const todoFilePath = path.resolve(process.cwd(), 'src/content/todo/todo.md');
+const rawMd = fs.readFileSync(todoFilePath, 'utf-8');
+const rawBody = rawMd.replace(/^---[\s\S]*?---\n*/, '');
+
+interface SectionStat {
+  name: string;
+  total: number;
+  done: number;
+}
+
+const sectionStats: SectionStat[] = [];
+const categoryBlocks = rawBody.split(/\n(?=# )/g).filter((block) => block.trim().startsWith('# '));
+
+for (const block of categoryBlocks) {
+  const name = block.match(/^#\s+(.+)/m)?.[1]?.trim();
+  if (!name) continue;
+
+  const itemBlocks = block.split(/\n(?=## )/g).slice(1);
+  let total = 0;
+  let done = 0;
+
+  for (const item of itemBlocks) {
+    if (!item.match(/^##\s+/m)) continue;
+    total += 1;
+    if (/>\s*.*完成[:：]/.test(item)) done += 1;
+  }
+
+  if (total > 0) sectionStats.push({ name, total, done });
+}
+
+const totalTasks = sectionStats.reduce((sum, s) => sum + s.total, 0);
+const totalDone = sectionStats.reduce((sum, s) => sum + s.done, 0);
+const totalPending = totalTasks - totalDone;
+const overallPercent = totalTasks > 0 ? Math.round((totalDone / totalTasks) * 100) : 0;
+const lastUpdate = todoEntry.data.lastUpdate ?? '';
+---
+
+<BaseLayout title={`TODO - ${siteConfig.title}`} description="任务清单">
+  <article class="article todo-page">
+    <div class="article-inner">
+      <header class="article-header">
+        <h1 class="article-title">任务清单</h1>
+        {lastUpdate && (
+          <p class="article-subtitle">最近更新 · {lastUpdate}</p>
+        )}
+      </header>
+
+      <div class="todo-stats-bar" aria-label="任务统计">
+        <div class="todo-stat-item">
+          <span class="todo-stat-value">{totalTasks}</span>
+          <span class="todo-stat-label">总计</span>
+        </div>
+        <div class="todo-stat-item">
+          <span class="todo-stat-value todo-stat-done">{totalDone}</span>
+          <span class="todo-stat-label">已完成</span>
+        </div>
+        <div class="todo-stat-item">
+          <span class="todo-stat-value todo-stat-pending">{totalPending}</span>
+          <span class="todo-stat-label">待办</span>
+        </div>
+        <div class="todo-stat-item">
+          <span class="todo-stat-value todo-stat-pct">{overallPercent}%</span>
+          <span class="todo-stat-label">完成率</span>
+        </div>
+      </div>
+
+      <div class="todo-progress-wrap">
+        <div class="todo-progress-bar">
+          <div class="todo-progress-fill" style={`width: ${overallPercent}%`}></div>
+        </div>
+      </div>
+
+      {sectionStats.length > 0 && (
+        <div class="todo-section-progress">
+          {sectionStats.map((section) => {
+            const pct = Math.round((section.done / section.total) * 100);
+            return (
+              <div class="todo-section-card">
+                <div class="todo-section-card-header">
+                  <span class="todo-section-card-name">{section.name}</span>
+                  <span class="todo-section-card-meta">{section.done}/{section.total}</span>
+                </div>
+                <div class="todo-section-progress-bar">
+                  <div class="todo-section-progress-fill" style={`width: ${pct}%`}></div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <div class="hr-line"></div>
+
+      <div class="article-entry todo-entry">
+        <Content />
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<script>
+  const enhanceTodoEntries = () => {
+    document.querySelectorAll('.todo-entry h2').forEach((heading) => {
+      if (!(heading instanceof HTMLElement)) return;
+      if (heading.querySelector('.todo-status')) return;
+
+      const meta = heading.nextElementSibling;
+      const metaText = meta?.textContent || '';
+      const done = /完成[:：]/.test(metaText);
+      const created = metaText.match(/创建[:：]\s*([0-9]{4}[-/.年][0-9]{1,2}[-/.月][0-9]{1,2}日?)/)?.[1];
+      const completed = metaText.match(/完成[:：]\s*([0-9]{4}[-/.年][0-9]{1,2}[-/.月][0-9]{1,2}日?)/)?.[1];
+
+      heading.classList.add(done ? 'is-done' : 'is-pending');
+
+      const badge = document.createElement('span');
+      badge.className = `todo-status ${done ? 'todo-status-done' : 'todo-status-pending'}`;
+      badge.textContent = done ? '已完成' : '进行中';
+      heading.appendChild(badge);
+
+      if (meta instanceof HTMLElement && meta.tagName === 'BLOCKQUOTE') {
+        meta.classList.add('todo-meta');
+        meta.replaceChildren();
+
+        if (created) {
+          const createdEl = document.createElement('span');
+          createdEl.className = 'todo-meta-item';
+          createdEl.textContent = `创建 ${created}`;
+          meta.appendChild(createdEl);
+        }
+
+        if (completed) {
+          const completedEl = document.createElement('span');
+          completedEl.className = 'todo-meta-item todo-meta-done';
+          completedEl.textContent = `完成 ${completed}`;
+          meta.appendChild(completedEl);
+        } else if (!created) {
+          meta.textContent = metaText.trim();
+        }
+      }
+    });
+  };
+
+  enhanceTodoEntries();
+  document.addEventListener('astro:page-load', enhanceTodoEntries);
+</script>
+
+<style is:global>
+.todo-page .todo-stats-bar {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  margin: 18px 0 12px;
+  flex-wrap: wrap;
+}
+
+.todo-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 84px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  background: var(--chip-bg);
+  border: 1px solid var(--chip-border);
+}
+
+.todo-stat-value {
+  font-family: var(--font-basic);
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 700;
+  line-height: 1.1;
+  color: #fff;
+}
+
+.todo-stat-value.todo-stat-done { color: #5fcb7a; }
+.todo-stat-value.todo-stat-pending { color: var(--red-2); }
+.todo-stat-value.todo-stat-pct { color: var(--red-3); }
+
+.todo-stat-label {
+  font-family: var(--font-basic);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--color-meta);
+  text-transform: uppercase;
+}
+
+.todo-progress-wrap {
+  max-width: 420px;
+  margin: 0 0 18px;
+}
+
+.todo-progress-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--chip-bg);
+  border: 1px solid var(--chip-border);
+  overflow: hidden;
+}
+
+.todo-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--red-1), var(--red-3));
+  box-shadow: 0 0 12px rgba(240, 138, 118, 0.4);
+}
+
+.todo-section-progress {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.todo-section-card {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--chip-bg);
+  border: 1px solid var(--chip-border);
+}
+
+.todo-section-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.todo-section-card-name {
+  font-family: var(--font-basic);
+  font-size: 13px;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.todo-section-card-meta {
+  font-family: var(--font-basic);
+  font-size: 12px;
+  color: var(--color-meta);
+  flex-shrink: 0;
+}
+
+.todo-section-progress-bar {
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.todo-section-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--red-1), var(--red-3));
+}
+
+/* ---- Article-like todo content ---- */
+.todo-entry > h1 {
+  margin: 2em 0 1em !important;
+  padding-bottom: 10px;
+  border-bottom: 1px solid color-mix(in srgb, var(--red-3) 28%, transparent);
+  font-size: clamp(22px, 3vw, 28px) !important;
+  letter-spacing: 0.04em;
+}
+
+.todo-entry > h1:first-child {
+  margin-top: 0 !important;
+}
+
+.todo-entry > h2 {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 1.8em 0 0.55em !important;
+  font-size: clamp(18px, 2.4vw, 22px) !important;
+}
+
+.todo-entry > h2.is-done {
+  opacity: 0.88;
+}
+
+.todo-entry > h2.is-done {
+  text-decoration: none;
+}
+
+.todo-entry > h2.is-done::before {
+  content: none;
+}
+
+.todo-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none !important;
+}
+
+.todo-status-done {
+  color: #9be7b0;
+  background: rgba(95, 203, 122, 0.16);
+  border: 1px solid rgba(95, 203, 122, 0.28);
+}
+
+.todo-status-pending {
+  color: var(--red-3);
+  background: color-mix(in srgb, var(--red-2) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--red-2) 28%, transparent);
+}
+
+.todo-entry > .todo-meta,
+.todo-entry > blockquote.todo-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin: 0 0 1em;
+  padding: 0;
+  border: 0;
+  color: var(--color-meta);
+  font-size: 13px;
+  font-family: var(--font-basic);
+}
+
+.todo-entry > .todo-meta .todo-meta-item,
+.todo-entry > blockquote.todo-meta .todo-meta-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--chip-bg);
+  border: 1px solid var(--chip-border);
+}
+
+.todo-entry > .todo-meta .todo-meta-done,
+.todo-entry > blockquote.todo-meta .todo-meta-done {
+  color: #9be7b0;
+  border-color: rgba(95, 203, 122, 0.28);
+  background: rgba(95, 203, 122, 0.12);
+}
+
+.todo-entry > h2 + p,
+.todo-entry > .todo-meta + p,
+.todo-entry > blockquote.todo-meta + p {
+  margin-top: 0.35em;
+}
+
+@media (max-width: 767px) {
+  .todo-stat-item {
+    min-width: 72px;
+    padding: 10px 12px;
+  }
+
+  .todo-section-progress {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+</style>

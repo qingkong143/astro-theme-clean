@@ -24,19 +24,18 @@
 
 ::selection { background: var(--tp-highlight); }
 
-/* ---- 字体栈(西文走 retypeset 原版字体,中文回落文楷/思源) ---- */
-.font-title { font-family: 'Snell-Black', 'EarlySummer-Subset', 'EarlySummer', var(--font-cjk); }
-.font-navbar { font-family: 'STIX-Italic', 'EarlySummer-Subset', 'EarlySummer', var(--font-cjk); }
-.font-time { font-family: 'Snell-Bold', 'EarlySummer-Subset', 'EarlySummer', var(--font-cjk); }
-.font-serif { font-family: 'STIX', 'EarlySummer', var(--font-cjk); }
+/* ---- 字体栈(全站等宽:SF Mono / Menlo,中文回落 PingFang SC) ---- */
+.font-title { font-family: "SF Mono", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", var(--font-cjk); }
+.font-navbar { font-family: "SF Mono", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", var(--font-cjk); }
+.font-time { font-family: "SF Mono", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", var(--font-cjk); }
+.font-serif { font-family: "SF Mono", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", var(--font-cjk); }
 
-/* 统一中西混排字体栈:STIX 渲染拉丁/希腊等西文,缺字触发 EarlySummer-Subset 兜底,
-   再缺走 EarlySummer 主字体(中日韩统一字形风格),最后回落到 LXGW/Noto Serif SC */
-.font-mixed { font-family: 'STIX', 'EarlySummer-Subset', 'EarlySummer', var(--font-cjk); }
+/* 统一中西混排字体栈:等宽西文 + PingFang SC 中文 */
+.font-mixed { font-family: "SF Mono", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", var(--font-cjk); }
 
 /* ---- 正文 ---- */
 .article-entry {
-  font-family: 'STIX', 'EarlySummer-Subset', 'EarlySummer', var(--font-cjk);
+  font-family: "SF Mono", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", var(--font-cjk);
   color: var(--tp-secondary);
   line-height: 1.85;
   overflow-wrap: break-word;
@@ -264,7 +263,7 @@
 .article-entry :where(hr)::before {
   content: "*   *   *";
   white-space: pre;
-  font-family: 'STIX', Georgia, serif;
+  font-family: "SF Mono", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", var(--font-cjk);
   font-size: 1.5em;
   letter-spacing: 0.1em;
   color: color-mix(in srgb, var(--tp-secondary) 30%, transparent);

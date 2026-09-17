@@ -6,10 +6,11 @@ export const siteConfig = {
   nav: [
     { href: '/', label: '首页' },
     { href: '/archive/', label: '归档' },
+    { href: '/todo/', label: 'TODO' },
     { href: '/music/', label: '音乐馆' },
+    { href: '/bangumi/', label: '追番' },
     { href: '/about/', label: '关于' },
-    { href: '/friend/', label: '友链' },
-    { href: '/bangumi/', label: '追番' }
+    { href: '/friend/', label: '友链' }
   ],
   social: [
     { name: 'email', label: 'Email', href: 'mailto:torch@318670.xyz' },

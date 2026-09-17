@@ -18,4 +18,19 @@ const blog = defineCollection({
   }),
 });
 
-export const collections = { blog };
+const todo = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string().optional(),
+    lastUpdate: z.string().optional(),
+  }),
+});
+
+const about = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string().optional(),
+  }),
+});
+
+export const collections = { blog, todo, about };
