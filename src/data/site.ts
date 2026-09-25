@@ -1,8 +1,8 @@
 export const siteConfig = {
-  title: '语焉',
-  subtitle: '朝花夕拾，多愁善感',
-  author: 'Torch',
-  description: '一个从 Hexo clean 主题迁移而来的 Astro 博客主题。',
+  title: 'Astro Clean',
+  subtitle: '干净、克制的静态博客主题',
+  author: 'Your Name',
+  description: '一个基于 Astro 的静态博客主题，适合个人写作与主题演示。',
   nav: [
     { href: '/', label: '首页' },
     { href: '/archive/', label: '归档' },
@@ -13,9 +13,8 @@ export const siteConfig = {
     { href: '/friend/', label: '友链' }
   ],
   social: [
-    { name: 'email', label: 'Email', href: 'mailto:torch@318670.xyz' },
-    { name: 'github', label: 'GitHub', href: 'https://github.com/qingkong143' },
-    { name: 'bilibili', label: 'Bilibili', href: 'https://space.bilibili.com/1983066952' }
+    { name: 'email', label: 'Email', href: 'mailto:hello@example.com' },
+    { name: 'github', label: 'GitHub', href: 'https://github.com/your-name/astro-clean' }
   ],
   postcard: false,
   avatar: '/avatar/avatar.webp',
@@ -43,8 +42,8 @@ export const siteConfig = {
   },
   comments: {
     twikoo: {
-      enable: true,
-      envId: 'https://twikoo.318670.xyz/',
+      enable: false,
+      envId: '',
       region: '',
       src: 'https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js',
       integrity: 'sha384-kwWLC0HjeZZnVPqCJ1AncI8tsk+kQqF9TbAmCclcc9Z0hGkfgHRzeQZxmdmZhE0K'
@@ -60,12 +59,12 @@ export const siteConfig = {
     },
     meting: {
       enable: true,
-      id: '5354878100',
+      id: '3778678',
       server: 'netease',
       type: 'playlist',
       src: 'https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js',
       integrity: 'sha384-ASVlpKF80A22OXTK3tfEjZm1EL6uFMKIC4p8+0maanw1S/IyB+Y4JG+ZDU7GpKE8'
     }
   },
-  defaultCover: 'https://pic.netbian.com/uploads/allimg/250903/181428-17568944682f66.jpg'
+  defaultCover: '/images/banner.webp'
 };

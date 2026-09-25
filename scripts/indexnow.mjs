@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 
-const SITE_URL = 'https://blog.318670.xyz';
+const SITE_URL = process.env.SITE_URL || 'https://example.com';
 
 // IndexNow API key — generate your own at https://www.bing.com/webmasters/indexnow
 // Place the key file at public/<your-key>.txt so engines can verify it.
@@ -12,17 +12,15 @@ const INDEXNOW_ENDPOINT = 'https://www.bing.com/indexnow';
 
 /**
  * Read the sitemap, extract all <loc> URLs, and submit them to IndexNow.
- * Usage:  node scripts/indexnow.mjs            # submits all URLs
- *         INDEXNOW_KEY=xxx node scripts/indexnow.mjs   # with key
+ * Usage:  SITE_URL=https://example.com node scripts/indexnow.mjs
+ *         INDEXNOW_KEY=xxx SITE_URL=https://example.com node scripts/indexnow.mjs
  */
 async function main() {
-  // Parse sitemap URLs (supports both sitemap.xml and sitemap-index.xml)
   const sitemapIndexPath = fileURLToPath(new URL('../dist/sitemap-index.xml', import.meta.url));
   let sitemapFile = '';
 
   try {
     const index = readFileSync(sitemapIndexPath, 'utf-8');
-    // sitemap index contains <sitemap><loc>.../sitemap-0.xml</loc></sitemap>
     const match = index.match(/<loc>(.+)<\/loc>/);
     if (match) {
       const childPath = fileURLToPath(new URL('../dist/sitemap-0.xml', import.meta.url));
@@ -44,7 +42,7 @@ async function main() {
   if (!INDEXNOW_KEY) {
     console.log('INDEXNOW_KEY not set — here is the payload that would be sent:');
     console.log(JSON.stringify({ host: new URL(SITE_URL).host, key: INDEXNOW_KEY, urlList: urls }, null, 2));
-    console.log('\nSet INDEXNOW_KEY env var or hard-code the key to actually submit.');
+    console.log('\nSet INDEXNOW_KEY and SITE_URL env vars to actually submit.');
     return;
   }
 

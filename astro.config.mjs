@@ -5,7 +5,7 @@ import remarkGfm from 'remark-gfm';
 import remarkLinkCard from './src/plugins/remark-link-card.mjs';
 
 export default defineConfig({
-  site: 'https://blog.318670.xyz',
+  site: 'https://your-name.github.io',
   integrations: [mdx(), sitemap()],
   markdown: {
     remarkPlugins: [remarkGfm, remarkLinkCard],

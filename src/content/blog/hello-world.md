@@ -1,8 +1,11 @@
 ---
 title: 主题样式示例全集
-cover: 'https://img.318670.xyz/20260817175119383.webp'
-tags: 水文
-abbrlink: 3eeb
+date: 2026-09-01
+cover: '/images/banner.webp'
+categories: 演示
+tags: [Astro, Markdown]
+abbrlink: hello-world
+brief: 标题、引用、代码、表格、任务列表、外链卡片和灯箱图片，一篇里看完主题的文章样式。
 ---
 
 ## 标题层级
@@ -21,7 +24,7 @@ abbrlink: 3eeb
 - ***加粗并斜体*** — `***加粗并斜体***`
 - ~~删除线文本~~ — `~~删除线文本~~`
 - `行内代码` — `` `行内代码` ``
-- [超链接](https://www.baidu.com) — `[超链接](https://www.baidu.com)`
+- [超链接](https://astro.build) — `[超链接](https://astro.build)`
 
 ## 链接样式
 
@@ -34,7 +37,7 @@ abbrlink: 3eeb
 
 图片支持点击放大预览，悬停时有轻微放大效果和阴影：
 
-![示例图片](https://pic.netbian.com/uploads/allimg/251020/102802-17609272828af0.jpg)
+![示例图片](/images/banner.webp)
 
 点击上方图片即可在全屏灯箱中查看大图，按 Esc 或点击背景区域关闭。
 
@@ -150,20 +153,18 @@ greeting('World');
 
 ````markdown
 ```link-card
-url: https://resend.com/emails
-title: Resend
-desc: Email for developers
-img: https://icon.url
+url: https://astro.build
+title: Astro
+desc: The web framework for content-driven websites
 ```
 ````
 
 实际渲染效果：
 
 ```link-card
-url: https://resend.com/emails
-title: Resend
-desc: Email for developers
-img: https://ts4.tc.mm.bing.net/th/id/ODF.HneL3SgRPI5ISxHcESwIJg?w=32&h=32&qlt=90&pcl=fffffc&o=6&pid=1.2
+url: https://astro.build
+title: Astro
+desc: The web framework for content-driven websites
 ```
 
 <br>
@@ -178,12 +179,6 @@ desc: 全球最大的代码托管平台，数百万开发者共同协作。
 
 > 必填字段：`url` + `title`，可选：`desc`（描述）、`img`（图标 URL）。
 
-## 视频嵌入
-
-iframe 视频会自动适配为 16:9 响应式容器：
-
-<iframe src="//player.bilibili.com/player.html?bvid=BV1GJ411x7h7&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
-
 ---
 
-以上覆盖了当前主题文章页支持的全部样式元素。
+以上覆盖了当前主题文章页支持的主要样式元素。

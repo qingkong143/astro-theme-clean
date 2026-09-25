@@ -4,12 +4,20 @@ import Comments from '../components/Comments.astro';
 import { siteConfig } from '../data/site';
 import { getImageSrcset, getProxiedImage } from '../utils/paths';
 
+const siteUrl = Astro.site?.origin || 'https://example.com';
+
 const friends = [
   {
-    name: 'D-Sketon',
-    url: 'https://d-sketon.github.io/',
-    desc: '一个车万人',
-    image: 'https://d-sketon.github.io/avatar/avatar.webp'
+    name: 'Astro',
+    url: 'https://astro.build/',
+    desc: 'Content-driven web framework',
+    image: 'https://github.com/withastro.png'
+  },
+  {
+    name: 'GitHub',
+    url: 'https://github.com/',
+    desc: 'Build and ship software',
+    image: 'https://github.com/github.png'
   }
 ];
 ---
@@ -21,9 +29,9 @@ const friends = [
       <div class="article-entry">
         <h2>本站信息</h2>
         <ul>
-          <li>站名：语焉</li>
-          <li>站长：Torch</li>
-          <li>地址：<a href="https://blog.318670.xyz">https://blog.318670.xyz</a></li>
+          <li>站名：{siteConfig.title}</li>
+          <li>站长：{siteConfig.author}</li>
+          <li>地址：<a href={siteUrl}>{siteUrl}</a></li>
         </ul>
         <h2>申请方法</h2>
         <p>添加本站后，在本页留言，格式如下：</p>
