@@ -6,7 +6,7 @@ import remarkLinkCard from './src/plugins/remark-link-card.mjs';
 
 export default defineConfig({
   site: 'https://qingkong143.github.io',
-  base: '/astro-theme-clean',
+  base: '/astro-theme-clean/',
   integrations: [mdx(), sitemap()],
   markdown: {
     remarkPlugins: [remarkGfm, remarkLinkCard],
